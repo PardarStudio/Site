@@ -3,86 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Наш Лесной Проект</title>
+    <title>Лесной Лагерь 🌲</title>
     <style>
         body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+            margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
                         url('https://i.ytimg.com/vi/j2nIMEMgcxQ/maxresdefault.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: white;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; display: flex; justify-content: center; min-height: 100vh;
+        }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        
+        /* Основной бокс */
+        .glass-box { 
+            background: white; color: #222; padding: 30px; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+            transition: opacity 0.5s ease;
         }
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        #list-box { display: none; width: 100%; text-align: center; }
+        
+        h1 { margin-top: 0; font-size: 26px; color: #1877f2; font-weight: 800; }
+        .forest-title { font-size: 32px; text-shadow: 2px 2px 10px black; margin-bottom: 25px; font-weight: 900; letter-spacing: 2px; }
+        
+        input, textarea { 
+            width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #eee; 
+            border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none;
         }
+        input:focus { border-color: #28a745; }
 
-        /* Стиль карточки регистрации */
-        #registration-box {
-            background: white;
-            color: #222;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        button { 
+            width: 100%; padding: 16px; background: #28a745; color: white; border: none; 
+            border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; 
+            transition: 0.3s; margin-top: 10px;
         }
-
-        /* Список участников (изначально скрыт) */
-        #list-box {
-            display: none; 
-            width: 100%;
+        button:hover { background: #218838; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40,167,69,0.4); }
+        
+        /* Карточки людей */
+        .user-entry { 
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #444; padding: 18px; 
+            margin-bottom: 15px; border-radius: 15px; text-align: left;
+            animation: slideUp 0.4s ease;
         }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { margin-top: 0; font-size: 24px; color: #1877f2; }
-        .forest-title { font-size: 32px; text-shadow: 2px 2px 10px black; margin-bottom: 20px; }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover { background: #218838; transform: scale(1.02); }
-
-        .user-entry {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            text-align: left;
-        }
-
-        .user-entry b { color: #58ff8b; font-size: 20px; }
-        .user-entry p { margin: 5px 0; color: #eee; }
-
-        #status-msg { margin-top: 10px; font-weight: bold; color: #28a745; }
+        .user-entry b { color: #58ff8b; font-size: 20px; display: block; margin-bottom: 5px; }
+        .user-entry span { color: #aaa; font-size: 14px; }
+        
+        #status-msg { margin-top: 15px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -90,88 +58,85 @@
     <div class="container">
         <div class="forest-title">🌲 ЛЕСНОЙ ПРОЕКТ</div>
 
-        <div id="registration-box">
-            <h1>Анкета</h1>
-            <input type="text" id="userName" placeholder="Имя и Фамилия">
+        <div id="reg-box" class="glass-box">
+            <h1>АНКЕТА</h1>
+            <input type="text" id="userName" placeholder="Твое Имя и Фамилия">
             <input type="number" id="userAge" placeholder="Твой возраст">
-            <textarea id="userGoal" placeholder="Зачем ты нам нужен?" rows="3"></textarea>
-            <button onclick="submitData()">ЗАПИСАТЬСЯ</button>
+            <textarea id="userGoal" placeholder="Зачем ты нам нужен в лесу?" rows="3"></textarea>
+            <button onclick="submitData()">СТАТЬ ЧАСТЬЮ КОМАНДЫ</button>
             <div id="status-msg"></div>
         </div>
 
         <div id="list-box">
-            <h2 style="text-shadow: 2px 2px 5px black;">Команда проекта:</h2>
+            <h2 style="text-shadow: 2px 2px 5px black; margin-bottom: 20px;">НАША КОМАНДА:</h2>
             <div id="people-list"></div>
-            <button onclick="location.reload()" style="background:#555; margin-top:20px;">Назад</button>
+            <button onclick="location.reload()" style="background:#444; margin-top:20px;">ДОБАВИТЬ ЕЩЕ</button>
         </div>
     </div>
 
     <script>
-        // Использовать только api.npoint.io для работы с данными!
         const API_URL = "https://api.npoint.io/29da76d74d4beedc7143";
 
-        // 1. Функция получения списка
-        async function fetchList() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                return Array.isArray(data) ? data : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        // 2. Функция отображения списка
-        function showList(list) {
-            const listDiv = document.getElementById('people-list');
-            document.getElementById('registration-box').style.display = 'none'; // Прячем форму
-            document.getElementById('list-box').style.display = 'block';      // Показываем список
-
-            listDiv.innerHTML = list.slice().reverse().map(p => `
-                <div class="user-entry">
-                    <b>${p.name}</b> (${p.age} лет)<br>
-                    <p><i>${p.goal}</i></p>
-                </div>
-            `).join('');
-        }
-
-        // 3. Функция отправки данных
         async function submitData() {
-            const name = document.getElementById('userName').value;
+            const name = document.getElementById('userName').value.trim();
             const age = document.getElementById('userAge').value;
-            const goal = document.getElementById('userGoal').value;
+            const goal = document.getElementById('userGoal').value.trim();
             const status = document.getElementById('status-msg');
 
-            if (!name || !age) {
-                alert("Заполни хотя бы имя и возраст!");
+            if (!name || !age || !goal) {
+                status.style.color = "#d63031";
+                status.innerText = "⚠️ Заполни все поля!";
                 return;
             }
 
-            status.innerText = "⏳ Сохранение в базу...";
+            status.style.color = "#1877f2";
+            status.innerText = "⏳ Отправка в лесной архив...";
 
             try {
-                // Загружаем текущий список
-                const list = await fetchList();
-                
-                // Добавляем тебя
+                // 1. Получаем список
+                const getRes = await fetch(API_URL);
+                let list = await getRes.json();
+                if (!Array.isArray(list)) list = [];
+
+                // 2. Добавляем данные
                 list.push({ name, age, goal });
 
-                // Отправляем обновленный список назад
-                const response = await fetch(API_URL, {
+                // 3. Сохраняем
+                const postRes = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(list)
                 });
 
-                if (response.ok) {
-                    showList(list); // Показываем всех участников
+                if (postRes.ok) {
+                    showList(list);
                 } else {
-                    status.innerText = "❌ Ошибка сервера";
+                    status.innerText = "❌ Ошибка сервера. Попробуй позже.";
                 }
             } catch (e) {
-                status.innerText = "❌ Ошибка подключения";
-                console.error(e);
+                status.style.color = "#d63031";
+                status.innerText = "❌ Ошибка сети. Проверь интернет!";
             }
+        }
+
+        function showList(list) {
+            const listDiv = document.getElementById('people-list');
+            const regBox = document.getElementById('reg-box');
+            const listBox = document.getElementById('list-box');
+
+            regBox.style.opacity = '0';
+            setTimeout(() => {
+                regBox.style.display = 'none';
+                listBox.style.display = 'block';
+                
+                listDiv.innerHTML = list.slice().reverse().map(p => `
+                    <div class="user-entry">
+                        <b>${p.name}</b>
+                        <p style="margin:0; color:#eee;">Возраст: ${p.age} лет</p>
+                        <p style="margin:10px 0 0 0; font-style: italic; color:#bbb;">"${p.goal}"</p>
+                    </div>
+                `).join('');
+            }, 500);
         }
     </script>
 </body>
