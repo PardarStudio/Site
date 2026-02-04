@@ -1,78 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Sign-In</title>
+    <title>Лесной Лагерь</title>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1c1e21; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 380px; margin-bottom: 20px; }
-        h2 { text-align: center; margin: 0 0 20px 0; color: #1877f2; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background: #166fe5; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .list-container { width: 100%; max-width: 450px; }
-        .entry { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 6px solid #1877f2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        #status { font-size: 13px; text-align: center; margin-top: 10px; color: #65676b; min-height: 1.2em; }
+        body {
+            margin: 0; padding: 20px; font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://i.ytimg.com/vi/j2nIMEMgcxQ/maxresdefault.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 400px; text-align: center; }
+
+        /* Белое окно анкеты */
+        .card { 
+            background: white; color: #222; padding: 25px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px;
+        }
+
+        h2 { margin-top: 0; color: #1877f2; }
+        
+        input, textarea { 
+            width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; 
+            border-radius: 10px; box-sizing: border-box; font-size: 16px;
+        }
+
+        button { 
+            width: 100%; padding: 15px; background: #28a745; color: white; 
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px;
+        }
+        button:hover { background: #218838; }
+        button:disabled { background: #ccc; }
+
+        /* Список людей */
+        .list-container { width: 100%; max-width: 400px; display: none; } /* Скрыт в начале */
+        
+        .entry { 
+            background: rgba(0,0,0,0.8); padding: 15px; margin-bottom: 12px; 
+            border-radius: 12px; border-left: 6px solid #28a745; text-align: left;
+        }
+        .entry strong { color: #58ff8b; font-size: 18px; }
+
+        #status { margin-top: 10px; font-weight: bold; color: #58ff8b; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Sign In</h2>
-        <input type="text" id="fn" placeholder="First Name">
-        <input type="text" id="ln" placeholder="Last Name">
-        <input type="number" id="age" placeholder="Age">
-        <textarea id="goal" placeholder="What do you want to be?" rows="2"></textarea>
-        <button id="submitBtn" onclick="saveData()">Add to List</button>
-        <div id="status"></div>
-    </div>
+    <h1 style="text-shadow: 2px 2px 10px black;">🌲 ЛЕСНОЙ ПРОЕКТ</h1>
 
-    <div class="list-container">
-        <h3>Current People:</h3>
-        <div id="displayArea">Loading...</div>
+    <div class="container">
+        <div class="card" id="formBox">
+            <h2>Анкета</h2>
+            <input type="text" id="fn" placeholder="Имя">
+            <input type="text" id="ln" placeholder="Фамилия">
+            <input type="number" id="age" placeholder="Возраст">
+            <textarea id="goal" placeholder="Твоя цель?" rows="2"></textarea>
+            <button id="submitBtn" onclick="saveData()">ЗАПИСАТЬСЯ</button>
+            <div id="status"></div>
+        </div>
+
+        <div class="list-container" id="listBox">
+            <h3 style="text-shadow: 2px 2px 5px black;">Кто уже в команде:</h3>
+            <div id="displayArea">Загрузка...</div>
+            <button onclick="location.reload()" style="background:#555; margin-top:15px; font-size:14px;">Назад</button>
+        </div>
     </div>
 
     <script>
-        // Your specific npoint API URL
+        // Твой рабочий ID
         const API_URL = "https://api.npoint.io/29da76d74d4beedc7143";
 
-        // 1. LOAD: Fetch list from the cloud
         async function loadData() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                
-                // If it's the very first time, npoint might return an empty object {}
-                // We convert it to an array [] if it isn't one.
                 const list = Array.isArray(data) ? data : [];
                 renderList(list);
                 return list;
             } catch (err) {
                 console.error("Load error:", err);
-                document.getElementById('displayArea').innerHTML = "No entries found.";
                 return [];
             }
         }
 
-        // 2. RENDER: Put data into the HTML
         function renderList(data) {
             const area = document.getElementById('displayArea');
             if (data.length === 0) {
-                area.innerHTML = "The list is currently empty.";
+                area.innerHTML = "Пока никого нет.";
                 return;
             }
-            // newest on top
             area.innerHTML = data.slice().reverse().map(p => `
                 <div class="entry">
-                    <strong>${p.fn} ${p.ln}</strong>, ${p.age}<br>
-                    <small>Goal: ${p.goal}</small>
+                    <strong>${p.fn} ${p.ln}</strong>, ${p.age} лет<br>
+                    <small>Цель: ${p.goal}</small>
                 </div>
             `).join('');
         }
 
-        // 3. SAVE: Get list, add person, and send back
         async function saveData() {
             const btn = document.getElementById('submitBtn');
             const status = document.getElementById('status');
@@ -82,20 +109,20 @@
             const age = document.getElementById('age').value;
             const goal = document.getElementById('goal').value;
 
-            if (!fn || !age) return alert("Please enter at least a Name and Age!");
+            if (!fn || !age) return alert("Введи имя и возраст!");
 
             btn.disabled = true;
-            status.innerText = "Saving to cloud...";
+            status.style.color = "white";
+            status.innerText = "⏳ Сохраняю...";
 
             try {
-                // Get the existing list
+                // 1. Получаем текущий список
                 const currentList = await loadData();
                 
-                // Add the new person
-                const newPerson = { fn, ln, age, goal };
-                currentList.push(newPerson);
+                // 2. Добавляем нового человека
+                currentList.push({ fn, ln, age, goal });
 
-                // Save updated list back to npoint (POST overwrites the bin)
+                // 3. Отправляем назад
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -103,22 +130,23 @@
                 });
 
                 if (res.ok) {
-                    status.innerText = "Success! Entry added.";
+                    status.innerText = "✅ Готово!";
+                    
+                    // ХИТРЫЙ МОМЕНТ: Прячем форму и показываем список
+                    document.getElementById('formBox').style.display = 'none';
+                    document.getElementById('listBox').style.display = 'block';
                     renderList(currentList);
-                    // Clear inputs
-                    document.querySelectorAll('input, textarea').forEach(i => i.value = '');
                 } else {
                     throw new Error("Server error");
                 }
             } catch (err) {
-                status.innerText = "Error saving. Check console.";
-                console.error(err);
-            } finally {
+                status.style.color = "#ff4d4d";
+                status.innerText = "❌ Ошибка сервера. Попробуй еще раз!";
                 btn.disabled = false;
             }
         }
 
-        // Initial load when page opens
+        // Прогружаем данные в фоне
         loadData();
     </script>
 </body>
