@@ -3,44 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Наш Лагерь</title>
+    <title>Наш Лесной Проект</title>
     <style>
         body {
             margin: 0;
             padding: 20px;
             font-family: 'Arial', sans-serif;
-            /* Твоя картинка на фоне */
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
                         url('https://i.ytimg.com/vi/j2nIMEMgcxQ/maxresdefault.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: white;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
-        .main-box {
-            background: rgba(255, 255, 255, 0.95);
-            color: #222;
-            padding: 25px;
-            border-radius: 15px;
+        .container {
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Стиль карточки регистрации */
+        #registration-box {
+            background: white;
+            color: #222;
+            padding: 30px;
+            border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h1 { margin-top: 0; text-align: center; color: #1877f2; font-size: 28px; }
+        /* Список участников (изначально скрыт) */
+        #list-box {
+            display: none; 
+            width: 100%;
+        }
 
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+        h1 { margin-top: 0; font-size: 24px; color: #1877f2; }
+        .forest-title { font-size: 32px; text-shadow: 2px 2px 10px black; margin-bottom: 20px; }
 
         input, textarea {
             width: 100%;
             padding: 12px;
-            margin-top: 5px;
+            margin: 10px 0;
             border: 2px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             box-sizing: border-box;
         }
@@ -51,120 +60,119 @@
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
-            margin-top: 20px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        button:hover { background: #218838; }
+        button:hover { background: #218838; transform: scale(1.02); }
 
-        .list-section {
-            width: 100%;
-            max-width: 400px;
-            margin-top: 30px;
-        }
-
-        .user-card {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #444;
+        .user-entry {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
             padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            text-align: left;
         }
 
-        .user-card b { color: #58ff8b; font-size: 18px; }
-        
-        #status { text-align: center; margin-top: 10px; font-weight: bold; }
+        .user-entry b { color: #58ff8b; font-size: 20px; }
+        .user-entry p { margin: 5px 0; color: #eee; }
+
+        #status-msg { margin-top: 10px; font-weight: bold; color: #28a745; }
     </style>
 </head>
 <body>
 
-    <h1 style="color: white; text-shadow: 2px 2px 10px black;">🌲 ЛЕСНОЙ ПРОЕКТ</h1>
-    <p style="text-shadow: 1px 1px 5px black;">Нам нужны люди. Запишись ниже!</p>
+    <div class="container">
+        <div class="forest-title">🌲 ЛЕСНОЙ ПРОЕКТ</div>
 
-    <div class="main-box">
-        <h1>Анкета</h1>
-        
-        <label>Имя и Фамилия</label>
-        <input type="text" id="name" placeholder="Напр: Иван Иванов">
+        <div id="registration-box">
+            <h1>Анкета</h1>
+            <input type="text" id="userName" placeholder="Имя и Фамилия">
+            <input type="number" id="userAge" placeholder="Твой возраст">
+            <textarea id="userGoal" placeholder="Зачем ты нам нужен?" rows="3"></textarea>
+            <button onclick="submitData()">ЗАПИСАТЬСЯ</button>
+            <div id="status-msg"></div>
+        </div>
 
-        <label>Сколько тебе лет?</label>
-        <input type="number" id="age" placeholder="Возраст">
-
-        <label>Зачем ты нам нужен?</label>
-        <textarea id="goal" placeholder="Напр: Умею строить или хочу помочь" rows="2"></textarea>
-
-        <button id="goBtn" onclick="save()">ОТПРАВИТЬ</button>
-        <div id="status"></div>
-    </div>
-
-    <div class="list-section">
-        <h2 style="text-align: center; text-shadow: 2px 2px 5px black;">Кто уже с нами:</h2>
-        <div id="people">Загрузка списка...</div>
+        <div id="list-box">
+            <h2 style="text-shadow: 2px 2px 5px black;">Команда проекта:</h2>
+            <div id="people-list"></div>
+            <button onclick="location.reload()" style="background:#555; margin-top:20px;">Назад</button>
+        </div>
     </div>
 
     <script>
-        const API = "https://api.npoint.io/29da76d74d4beedc7143";
+        // Использовать только api.npoint.io для работы с данными!
+        const API_URL = "https://api.npoint.io/29da76d74d4beedc7143";
 
-        async function getList() {
+        // 1. Функция получения списка
+        async function fetchList() {
             try {
-                const res = await fetch(API);
-                const data = await res.json();
-                const list = Array.isArray(data) ? data : [];
-                
-                const box = document.getElementById('people');
-                if(list.length === 0) {
-                    box.innerHTML = "<p style='text-align:center'>Пока никого нет...</p>";
-                } else {
-                    box.innerHTML = list.slice().reverse().map(p => `
-                        <div class="user-card">
-                            <b>${p.name}</b> (${p.age} лет)<br>
-                            <i style="color: #ccc">${p.goal}</i>
-                        </div>
-                    `).join('');
-                }
-                return list;
-            } catch (e) { return []; }
-        }
-
-        async function save() {
-            const btn = document.getElementById('goBtn');
-            const status = document.getElementById('status');
-            
-            const n = document.getElementById('name').value;
-            const a = document.getElementById('age').value;
-            const g = document.getElementById('goal').value;
-
-            if(!n || !a) { alert("Заполни имя и возраст!"); return; }
-
-            btn.disabled = true;
-            status.innerText = "⏳ Сохраняю...";
-
-            try {
-                const list = await getList();
-                list.push({ name: n, age: a, goal: g });
-
-                await fetch(API, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(list)
-                });
-
-                status.style.color = "green";
-                status.innerText = "✅ Готово!";
-                document.querySelectorAll('input, textarea').forEach(i => i.value = '');
-                getList();
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                return Array.isArray(data) ? data : [];
             } catch (e) {
-                status.style.color = "red";
-                status.innerText = "❌ Ошибка!";
-            } finally {
-                btn.disabled = false;
+                return [];
             }
         }
 
-        getList();
+        // 2. Функция отображения списка
+        function showList(list) {
+            const listDiv = document.getElementById('people-list');
+            document.getElementById('registration-box').style.display = 'none'; // Прячем форму
+            document.getElementById('list-box').style.display = 'block';      // Показываем список
+
+            listDiv.innerHTML = list.slice().reverse().map(p => `
+                <div class="user-entry">
+                    <b>${p.name}</b> (${p.age} лет)<br>
+                    <p><i>${p.goal}</i></p>
+                </div>
+            `).join('');
+        }
+
+        // 3. Функция отправки данных
+        async function submitData() {
+            const name = document.getElementById('userName').value;
+            const age = document.getElementById('userAge').value;
+            const goal = document.getElementById('userGoal').value;
+            const status = document.getElementById('status-msg');
+
+            if (!name || !age) {
+                alert("Заполни хотя бы имя и возраст!");
+                return;
+            }
+
+            status.innerText = "⏳ Сохранение в базу...";
+
+            try {
+                // Загружаем текущий список
+                const list = await fetchList();
+                
+                // Добавляем тебя
+                list.push({ name, age, goal });
+
+                // Отправляем обновленный список назад
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(list)
+                });
+
+                if (response.ok) {
+                    showList(list); // Показываем всех участников
+                } else {
+                    status.innerText = "❌ Ошибка сервера";
+                }
+            } catch (e) {
+                status.innerText = "❌ Ошибка подключения";
+                console.error(e);
+            }
+        }
     </script>
 </body>
 </html>
