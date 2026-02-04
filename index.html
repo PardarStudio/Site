@@ -1,101 +1,254 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Sign-In</title>
+    <title>Интерактивный Список Гостей</title>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1c1e21; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 380px; margin-bottom: 20px; }
-        h2 { text-align: center; margin: 0 0 20px 0; color: #1877f2; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background: #166fe5; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .list-container { width: 100%; max-width: 450px; }
-        .entry { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 6px solid #1877f2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        #status { font-size: 13px; text-align: center; margin-top: 10px; color: #65676b; min-height: 1.2em; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: #1e293b;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            text-align: center;
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .input-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #475569;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s active;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        button:active { transform: translateY(0); }
+
+        button:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+
+        .list-header {
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .entry {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 6px solid var(--primary);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .entry h4 { margin: 0 0 5px 0; font-size: 18px; color: #0f172a; }
+        .entry p { margin: 5px 0; color: #475569; font-size: 15px; }
+        .entry .meta { font-size: 12px; color: #94a3b8; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
+
+        #status {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 15px;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Sign In</h2>
-        <input type="text" id="fn" placeholder="First Name">
-        <input type="text" id="ln" placeholder="Last Name">
-        <input type="number" id="age" placeholder="Age">
-        <textarea id="goal" placeholder="What do you want to be?" rows="2"></textarea>
-        <button id="submitBtn" onclick="saveData()">Add to List</button>
-        <div id="status"></div>
-    </div>
+    <div class="container">
+        <div class="card">
+            <h2>Регистрация</h2>
+            <div class="input-group">
+                <label>Имя и Фамилия</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="fn" placeholder="Имя">
+                    <input type="text" id="ln" placeholder="Фамилия">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Ваш возраст</label>
+                <input type="number" id="age" placeholder="Например: 25">
+            </div>
+            <div class="input-group">
+                <label>Ваша цель/амбиция</label>
+                <textarea id="goal" placeholder="Кем вы хотите стать?" rows="2"></textarea>
+            </div>
+            <button id="submitBtn" onclick="saveData()">Записаться в список</button>
+            <div id="status"></div>
+        </div>
 
-    <div class="list-container">
-        <h3>Current People:</h3>
-        <div id="displayArea">Loading...</div>
+        <div class="list-container">
+            <div class="list-header">
+                <h3 style="margin:0">Кто уже в списке:</h3>
+                <span id="counter" style="background: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold;">0</span>
+            </div>
+            <div id="displayArea"></div>
+        </div>
     </div>
 
     <script>
-        // Your specific npoint API URL
         const API_URL = "https://api.npoint.io/12e0ffe9bac6a3d4e61f";
 
-        // 1. LOAD: Fetch list from the cloud
         async function loadData() {
+            const area = document.getElementById('displayArea');
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                
-                // If it's the very first time, npoint might return an empty object {}
-                // We convert it to an array [] if it isn't one.
                 const list = Array.isArray(data) ? data : [];
+                
+                document.getElementById('counter').innerText = list.length;
                 renderList(list);
                 return list;
             } catch (err) {
-                console.error("Load error:", err);
-                document.getElementById('displayArea').innerHTML = "No entries found.";
+                area.innerHTML = "<p style='color:white; text-align:center;'>Пока никого нет. Будь первым!</p>";
                 return [];
             }
         }
 
-        // 2. RENDER: Put data into the HTML
         function renderList(data) {
             const area = document.getElementById('displayArea');
             if (data.length === 0) {
-                area.innerHTML = "The list is currently empty.";
+                area.innerHTML = "<p style='color:white; text-align:center;'>Список пуст.</p>";
                 return;
             }
-            // newest on top
+            
             area.innerHTML = data.slice().reverse().map(p => `
                 <div class="entry">
-                    <strong>${p.fn} ${p.ln}</strong>, ${p.age}<br>
-                    <small>Goal: ${p.goal}</small>
+                    <h4>${p.fn} ${p.ln}</h4>
+                    <p><strong>Возраст:</strong> ${p.age}</p>
+                    <p><strong>Цель:</strong> ${p.goal}</p>
+                    <div class="meta">📅 Дата регистрации: ${p.date || 'Неизвестно'}</div>
                 </div>
             `).join('');
         }
 
-        // 3. SAVE: Get list, add person, and send back
         async function saveData() {
             const btn = document.getElementById('submitBtn');
             const status = document.getElementById('status');
             
-            const fn = document.getElementById('fn').value;
-            const ln = document.getElementById('ln').value;
+            const fn = document.getElementById('fn').value.trim();
+            const ln = document.getElementById('ln').value.trim();
             const age = document.getElementById('age').value;
-            const goal = document.getElementById('goal').value;
+            const goal = document.getElementById('goal').value.trim();
 
-            if (!fn || !age) return alert("Please enter at least a Name and Age!");
+            if (!fn || !age || !goal) {
+                status.style.color = "#ef4444";
+                status.innerText = "⚠️ Пожалуйста, заполните все поля!";
+                return;
+            }
 
             btn.disabled = true;
-            status.innerText = "Saving to cloud...";
+            status.style.color = "#4f46e5";
+            status.innerHTML = '<div class="loader"></div> Сохранение...';
 
             try {
-                // Get the existing list
                 const currentList = await loadData();
                 
-                // Add the new person
-                const newPerson = { fn, ln, age, goal };
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('ru-RU') + ' в ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+
+                const newPerson = { fn, ln, age, goal, date: dateStr };
                 currentList.push(newPerson);
 
-                // Save updated list back to npoint (POST overwrites the bin)
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -103,22 +256,20 @@
                 });
 
                 if (res.ok) {
-                    status.innerText = "Success! Entry added.";
+                    status.style.color = "#10b981";
+                    status.innerText = "✅ Успешно добавлено!";
                     renderList(currentList);
-                    // Clear inputs
+                    document.getElementById('counter').innerText = currentList.length;
                     document.querySelectorAll('input, textarea').forEach(i => i.value = '');
-                } else {
-                    throw new Error("Server error");
                 }
             } catch (err) {
-                status.innerText = "Error saving. Check console.";
-                console.error(err);
+                status.style.color = "#ef4444";
+                status.innerText = "❌ Ошибка при сохранении.";
             } finally {
                 btn.disabled = false;
             }
         }
 
-        // Initial load when page opens
         loadData();
     </script>
 </body>
