@@ -3,134 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лесной Лагерь 🌲 Регистрация</title>
+    <title>Лесной Штаб 🃏</title>
     <style>
-        :root {
-            --primary: #28a745;
-            --accent: #1877f2;
-            --bg-dark: rgba(0, 0, 0, 0.85);
-        }
-
         body {
             margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
                         url('https://i.ytimg.com/vi/j2nIMEMgcxQ/maxresdefault.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
             color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        .container { width: 100%; max-width: 420px; text-align: center; }
+        .container { width: 100%; max-width: 400px; text-align: center; }
 
-        .forest-title { 
-            font-size: 36px; font-weight: 900; text-shadow: 3px 3px 15px rgba(0,0,0,0.8);
-            margin-bottom: 10px; letter-spacing: 1px;
-        }
+        .title { font-size: 38px; font-weight: 900; text-shadow: 2px 2px 10px black; margin-bottom: 5px; }
+        .subtitle { margin-bottom: 25px; opacity: 0.9; font-size: 18px; }
 
-        .subtitle { margin-bottom: 30px; font-style: italic; opacity: 0.9; }
-
-        /* Карточка анкеты */
         .card { 
-            background: white; color: #2d3436; padding: 30px; border-radius: 25px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.95); color: #333; padding: 25px; 
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 20px;
         }
 
-        h2 { margin: 0 0 20px 0; color: var(--accent); font-size: 24px; }
-        
-        .input-group { text-align: left; margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #636e72; }
-
-        input, select, textarea { 
-            width: 100%; padding: 14px; border: 2px solid #dfe6e9; 
-            border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none;
-            transition: 0.3s;
+        input, textarea { 
+            width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; 
+            border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none;
         }
-        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(24,119,242,0.2); }
+        input:focus { border-color: #f1c40f; }
 
         button { 
-            width: 100%; padding: 18px; background: var(--primary); color: white; 
-            border: none; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 18px;
-            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+            width: 100%; padding: 15px; background: #e67e22; color: white; 
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px;
+            transition: 0.2s; margin-top: 10px;
         }
-        button:hover { background: #218838; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(40,167,69,0.5); }
-        button:active { transform: translateY(0); }
+        button:hover { background: #d35400; transform: scale(1.02); }
 
-        /* Список */
-        .list-container { width: 100%; display: none; animation: slideUp 0.6s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .stats-bar { background: var(--accent); padding: 10px; border-radius: 10px; margin-bottom: 20px; font-weight: bold; }
-
-        .entry { 
-            background: var(--bg-dark); padding: 20px; margin-bottom: 15px; 
-            border-radius: 18px; border-left: 8px solid var(--primary); text-align: left;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        .list-container { width: 100%; display: none; }
+        
+        .friend-card { 
+            background: rgba(0, 0, 0, 0.8); padding: 15px; margin-bottom: 10px; 
+            border-radius: 15px; border-top: 4px solid #f1c40f; text-align: left;
         }
-        .entry strong { color: #58ff8b; font-size: 22px; display: block; margin-bottom: 5px; }
-        .entry .role-tag { 
-            display: inline-block; background: var(--accent); color: white; 
-            padding: 3px 10px; border-radius: 5px; font-size: 12px; margin-bottom: 10px;
-        }
-        .entry p { margin: 5px 0; color: #dfe6e9; line-height: 1.4; }
-        .entry .date { font-size: 11px; color: #636e72; margin-top: 10px; text-align: right; }
-
-        #status { margin-top: 15px; font-weight: bold; color: var(--primary); }
+        .friend-card b { color: #f1c40f; font-size: 20px; }
+        .friend-card p { margin: 5px 0; color: #eee; }
+        
+        #status { margin-top: 10px; font-weight: bold; color: #f1c40f; }
     </style>
 </head>
 <body>
 
-    <div class="forest-title">🌲 ЛЕСНОЙ ПРОЕКТ</div>
-    <div class="subtitle">Построй своё будущее среди деревьев</div>
+    <div class="title">ЛЕЙСНОЙ ШТАБ 🃏</div>
+    <div class="subtitle">Карты, чипсы и отдых</div>
 
     <div class="container">
         <div class="card" id="formBox">
-            <h2>ПРИСОЕДИНИТЬСЯ</h2>
-            
-            <div class="input-group">
-                <label>Ваше Имя</label>
-                <input type="text" id="fn" placeholder="Напр. Александр">
-            </div>
-
-            <div class="input-group">
-                <label>Ваша Фамилия</label>
-                <input type="text" id="ln" placeholder="Напр. Иванов">
-            </div>
-
-            <div class="input-group">
-                <label>Ваша роль в лагере</label>
-                <select id="role">
-                    <option value="Строитель">🔨 Строитель (строю дома)</option>
-                    <option value="Охотник/Сборщик">🏹 Охотник/Сборщик (ищу еду)</option>
-                    <option value="Повар">🍳 Повар (готовлю на костре)</option>
-                    <option value="Охранник">🛡️ Охранник (слежу за порядком)</option>
-                    <option value="Инженер">⚙️ Инженер (делаю механизмы)</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Возраст</label>
-                <input type="number" id="age" placeholder="Сколько вам лет?">
-            </div>
-
-            <div class="input-group">
-                <label>Что именно ты будешь делать?</label>
-                <textarea id="goal" placeholder="Напиши подробнее о своих планах..." rows="3"></textarea>
-            </div>
-
-            <button id="submitBtn" onclick="saveData()">ВСТУПИТЬ В ОТРЯД</button>
+            <h2 style="margin-top:0">Залетай в игру!</h2>
+            <input type="text" id="fn" placeholder="Твое Имя">
+            <input type="text" id="ln" placeholder="Фамилия (если хочешь)">
+            <input type="number" id="age" placeholder="Сколько тебе лет?">
+            <textarea id="goal" placeholder="Что будешь делать? (напр. играть в дурака, принесу колу)" rows="3"></textarea>
+            <button id="submitBtn" onclick="saveData()">Я В ДЕЛЕ!</button>
             <div id="status"></div>
         </div>
 
         <div class="list-container" id="listBox">
-            <div class="stats-bar" id="stats">Всего участников: 0</div>
+            <h2 style="text-shadow: 2px 2px 5px black;">КТО УЖЕ СОБРАЛСЯ:</h2>
             <div id="displayArea"></div>
-            <button onclick="location.reload()" style="background:#444; margin-top:20px; font-size:14px;">ЗАПИСАТЬ ЕЩЕ</button>
+            <button onclick="location.reload()" style="background:#444; margin-top:15px; font-size:14px;">ЗАПИСАТЬ ЕЩЕ</button>
         </div>
     </div>
 
     <script>
-        // Твой проверенный ID
         const API_URL = "https://api.npoint.io/ad618be876cb8968fb5c";
 
         async function loadData() {
@@ -143,19 +84,14 @@
 
         function renderList(list) {
             const area = document.getElementById('displayArea');
-            document.getElementById('stats').innerText = `Всего участников: ${list.length}`;
-            
             if (list.length === 0) {
-                area.innerHTML = "Пока лагерь пуст...";
+                area.innerHTML = "Пока никого нет, будь первым!";
                 return;
             }
             area.innerHTML = list.slice().reverse().map(p => `
-                <div class="entry">
-                    <div class="role-tag">${p.role || 'Участник'}</div>
-                    <strong>${p.fn} ${p.ln}</strong>
-                    <p>Возраст: ${p.age} лет</p>
-                    <p><i>${p.goal}</i></p>
-                    <div class="date">Записан: ${p.time || 'недавно'}</div>
+                <div class="friend-card">
+                    <b>${p.fn} ${p.ln}</b> (${p.age} лет)
+                    <p>Будет делать: ${p.goal}</p>
                 </div>
             `).join('');
         }
@@ -167,22 +103,16 @@
             const fn = document.getElementById('fn').value.trim();
             const ln = document.getElementById('ln').value.trim();
             const age = document.getElementById('age').value;
-            const role = document.getElementById('role').value;
             const goal = document.getElementById('goal').value.trim();
 
-            if (!fn || !age || !goal) return alert("Заполни все важные поля!");
+            if (!fn || !goal) return alert("Напиши имя и что будешь делать!");
 
             btn.disabled = true;
-            status.innerText = "⏳ Отправка гонца в лагерь...";
+            status.innerText = "⏳ Добавляю тебя в список...";
 
             try {
                 const currentList = await loadData();
-                
-                // Добавляем время записи
-                const now = new Date();
-                const timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                currentList.push({ fn, ln, age, role, goal, time: timeStr });
+                currentList.push({ fn, ln, age, goal });
 
                 const res = await fetch(API_URL, {
                     method: 'POST',
@@ -191,15 +121,12 @@
                 });
 
                 if (res.ok) {
-                    status.innerText = "✅ Ты в команде!";
+                    status.innerText = "✅ Ты в списке!";
                     setTimeout(() => {
                         document.getElementById('formBox').style.display = 'none';
                         document.getElementById('listBox').style.display = 'block';
                         renderList(currentList);
-                    }, 800);
-                } else {
-                    status.innerText = "❌ Ошибка записи.";
-                    btn.disabled = false;
+                    }, 500);
                 }
             } catch (err) {
                 status.innerText = "❌ Ошибка сети.";
