@@ -6,7 +6,7 @@
     <title>Лесной Лагерь 🌲</title>
     <style>
         body {
-            margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
                         url('https://i.ytimg.com/vi/j2nIMEMgcxQ/maxresdefault.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
@@ -15,44 +15,34 @@
 
         .container { width: 100%; max-width: 400px; text-align: center; }
 
-        /* Белая карточка анкеты */
         .card { 
-            background: rgba(255, 255, 255, 0.95); color: #222; padding: 25px; 
-            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
-            margin-bottom: 20px; transition: 0.3s;
+            background: white; color: #222; padding: 25px; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin-bottom: 20px;
         }
 
-        h1 { margin: 0 0 20px 0; font-size: 26px; color: #1877f2; }
+        h1 { margin: 0 0 15px 0; color: #1877f2; font-size: 26px; }
         .forest-title { font-size: 32px; text-shadow: 2px 2px 10px black; margin-bottom: 25px; font-weight: bold; }
 
         input, textarea { 
             width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; 
             border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: #28a745; }
 
         button { 
-            width: 100%; padding: 15px; background: #28a745; color: white; 
+            width: 100%; padding: 16px; background: #28a745; color: white; 
             border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 18px;
-            transition: 0.2s;
         }
-        button:hover { background: #218838; transform: scale(1.02); }
-        button:disabled { background: #aaa; }
+        button:hover { background: #218838; }
 
-        /* Список участников */
         .list-container { width: 100%; max-width: 400px; display: none; }
         
         .entry { 
             background: rgba(0, 0, 0, 0.85); padding: 15px; margin-bottom: 12px; 
             border-radius: 15px; border-left: 6px solid #28a745; text-align: left;
-            animation: fadeIn 0.5s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .entry strong { color: #58ff8b; font-size: 18px; display: block; }
 
-        .entry strong { color: #58ff8b; font-size: 20px; display: block; }
-        .entry span { color: #ccc; font-size: 14px; font-style: italic; }
-
-        #status { margin-top: 15px; font-weight: bold; font-size: 14px; }
+        #status { margin-top: 15px; font-weight: bold; color: #58ff8b; }
     </style>
 </head>
 <body>
@@ -65,77 +55,66 @@
             <input type="text" id="fn" placeholder="Имя">
             <input type="text" id="ln" placeholder="Фамилия">
             <input type="number" id="age" placeholder="Возраст">
-            <textarea id="goal" placeholder="Твои навыки или цель?" rows="2"></textarea>
+            <textarea id="goal" placeholder="Твоя цель?" rows="2"></textarea>
             <button id="submitBtn" onclick="saveData()">ЗАПИСАТЬСЯ</button>
             <div id="status"></div>
         </div>
 
         <div class="list-container" id="listBox">
-            <h2 style="text-shadow: 2px 2px 5px black;">КОМАНДА:</h2>
+            <h2 style="text-shadow: 2px 2px 5px black;">СПИСОК КОМАНДЫ:</h2>
             <div id="displayArea">Загрузка...</div>
-            <button onclick="location.reload()" style="background:#444; margin-top:15px; font-size:14px;">ЗАПИСАТЬ ЕЩЕ</button>
+            <button onclick="location.reload()" style="background:#444; margin-top:15px;">Назад</button>
         </div>
     </div>
 
     <script>
-        // Твой НОВЫЙ ID
-        const API_URL = "https://api.npoint.io/8278f0388914d230b56a";
+        // Твой НОВЫЙ анонимный ID
+        const API_URL = "https://api.npoint.io/ad618be876cb8968fb5c";
 
-        // 1. ЗАГРУЗКА ДАННЫХ
         async function loadData() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 return Array.isArray(data) ? data : [];
-            } catch (err) {
-                console.error("Ошибка загрузки:", err);
-                return [];
-            }
+            } catch (err) { return []; }
         }
 
-        // 2. ОТРИСОВКА СПИСКА
         function renderList(list) {
             const area = document.getElementById('displayArea');
             if (list.length === 0) {
-                area.innerHTML = "<p style='text-align:center'>Пока никого нет...</p>";
+                area.innerHTML = "Пока никого нет.";
                 return;
             }
             area.innerHTML = list.slice().reverse().map(p => `
                 <div class="entry">
                     <strong>${p.fn} ${p.ln}</strong>
-                    <div style="margin: 5px 0;">Возраст: ${p.age} лет</div>
-                    <span>"${p.goal}"</span>
+                    <span>Возраст: ${p.age} | Цель: ${p.goal}</span>
                 </div>
             `).join('');
         }
 
-        // 3. СОХРАНЕНИЕ
         async function saveData() {
             const btn = document.getElementById('submitBtn');
             const status = document.getElementById('status');
             
-            const fn = document.getElementById('fn').value.trim();
-            const ln = document.getElementById('ln').value.trim();
+            const fn = document.getElementById('fn').value;
+            const ln = document.getElementById('ln').value;
             const age = document.getElementById('age').value;
-            const goal = document.getElementById('goal').value.trim();
+            const goal = document.getElementById('goal').value;
 
-            if (!fn || !age) {
-                alert("Пожалуйста, введи имя и возраст!");
-                return;
-            }
+            if (!fn || !age) return alert("Введи имя и возраст!");
 
             btn.disabled = true;
-            status.style.color = "#1877f2";
-            status.innerText = "⏳ Секунду, записываю тебя...";
+            status.innerText = "⏳ Записываю...";
 
             try {
-                // Получаем список
+                // 1. Сначала читаем текущий список
                 const currentList = await loadData();
                 
-                // Добавляем тебя
+                // 2. Добавляем тебя
                 currentList.push({ fn, ln, age, goal });
 
-                // Отправляем всё вместе (POST на npoint перезаписывает базу)
+                // 3. Сохраняем ВЕСЬ список обратно через POST
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -143,21 +122,17 @@
                 });
 
                 if (res.ok) {
-                    status.style.color = "#28a745";
-                    status.innerText = "✅ Успешно добавлено!";
-                    
-                    // Прячем форму, показываем список
-                    setTimeout(() => {
-                        document.getElementById('formBox').style.display = 'none';
-                        document.getElementById('listBox').style.display = 'block';
-                        renderList(currentList);
-                    }, 500);
+                    status.innerText = "✅ Готово!";
+                    // Прячем анкету, показываем список
+                    document.getElementById('formBox').style.display = 'none';
+                    document.getElementById('listBox').style.display = 'block';
+                    renderList(currentList);
                 } else {
-                    throw new Error("Server error");
+                    status.innerText = "❌ Ошибка " + res.status;
+                    btn.disabled = false;
                 }
             } catch (err) {
-                status.style.color = "#ff4d4d";
-                status.innerText = "❌ Ошибка. Нажми еще раз!";
+                status.innerText = "❌ Ошибка сети";
                 btn.disabled = false;
             }
         }
