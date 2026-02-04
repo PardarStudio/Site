@@ -5,66 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Sign-In</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { color: #333; text-align: center; }
-        input, button, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #218838; }
-        .list-section { margin-top: 30px; width: 100%; max-width: 600px; }
-        .person-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #28a745; shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .person-card h4 { margin: 0; color: #222; }
-        .person-card p { margin: 5px 0 0; color: #666; font-size: 0.9rem; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 100%; max-width: 400px; margin-bottom: 30px; }
+        h2 { text-align: center; color: #1c1e21; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; }
+        .list-container { width: 100%; max-width: 500px; }
+        .person-entry { background: white; padding: 15px; margin-bottom: 12px; border-radius: 10px; border-left: 6px solid #007bff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .person-entry h4 { margin: 0; color: #333; }
+        .person-entry p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        #status { font-size: 12px; color: #666; text-align: center; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Sign In to the List</h2>
-        <form id="signInForm">
-            <input type="text" id="firstName" placeholder="First Name" required>
-            <input type="text" id="lastName" placeholder="Last Name" required>
-            <input type="number" id="age" placeholder="Age" required>
-            <textarea id="ambition" placeholder="What do you want to be?" rows="3" required></textarea>
-            <button type="submit">Submit Information</button>
-        </form>
+    <div class="card">
+        <h2>Sign In</h2>
+        <input type="text" id="firstName" placeholder="First Name">
+        <input type="text" id="lastName" placeholder="Last Name">
+        <input type="number" id="age" placeholder="Age">
+        <textarea id="ambition" placeholder="What do you want to be?" rows="2"></textarea>
+        <button id="submitBtn" onclick="saveToCloud()">Submit to List</button>
+        <div id="status"></div>
     </div>
 
-    <div class="list-section">
-        <h3>People who have signed in:</h3>
-        <div id="peopleList">
-            <p>Loading the list...</p>
-        </div>
+    <div class="list-container">
+        <h3>Who's here:</h3>
+        <div id="displayArea">Loading the list...</div>
     </div>
 
-    <script type="module">
-        // Note: You will need to plug in your own Supabase URL and Key here later!
-        const SUBAPASE_URL = "YOUR_SUPABASE_URL_HERE";
-        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
+    <script>
+        // This is your specific JSONBlob API URL
+        const API_URL = "https://jsonblob.com/api/jsonBlob/019c2a6d-12fe-7c29-8905-d85cc566029c";
 
-        const form = document.getElementById('signInForm');
-        const listDiv = document.getElementById('peopleList');
-
-        // Function to show the people on the screen
-        function renderPeople(people) {
-            listDiv.innerHTML = '';
-            people.forEach(person => {
-                const card = document.createElement('div');
-                card.className = 'person-card';
-                card.innerHTML = `
-                    <h4>${person.first_name} ${person.last_name}, ${person.age}</h4>
-                    <p><strong>Goal:</strong> ${person.ambition}</p>
-                `;
-                listDiv.appendChild(card);
-            });
+        // 1. Load data from the cloud
+        async function loadData() {
+            try {
+                const response = await fetch(API_URL);
+                const people = await response.json();
+                renderList(people);
+                return people;
+            } catch (err) {
+                document.getElementById('displayArea').innerHTML = "No one has signed in yet.";
+                return [];
+            }
         }
 
-        // Logic for when you hit "Submit"
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            alert("To make this save for everyone, connect a database like Supabase!");
-            // Here you would add the code to "POST" to your database
-        });
+        // 2. Put the data into the HTML
+        function renderList(data) {
+            const area = document.getElementById('displayArea');
+            if (!data || data.length === 0) {
+                area.innerHTML = "List is currently empty.";
+                return;
+            }
+            // Reverse so the newest person is at the top
+            area.innerHTML = data.slice().reverse().map(p => `
+                <div class="person-entry">
+                    <h4>${p.fn} ${p.ln}, ${p.age}</h4>
+                    <p><strong>Goal:</strong> ${p.goal}</p>
+                </div>
+            `).join('');
+        }
+
+        // 3. Save new entry
+        async function saveToCloud() {
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('status');
+            
+            const fn = document.getElementById('firstName').value;
+            const ln = document.getElementById('lastName').value;
+            const age = document.getElementById('age').value;
+            const goal = document.getElementById('ambition').value;
+
+            if (!fn || !ln || !age || !goal) {
+                alert("Please fill in all boxes!");
+                return;
+            }
+
+            btn.disabled = true;
+            status.innerText = "Saving to cloud...";
+
+            try {
+                // Get the existing list first
+                const currentList = await loadData();
+                
+                // Add the new person
+                const newPerson = { fn, ln, age, goal };
+                currentList.push(newPerson);
+
+                // PUT the updated list back to your JSONBlob
+                await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentList)
+                });
+
+                status.innerText = "Saved!";
+                // Clear the boxes
+                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                renderList(currentList);
+            } catch (err) {
+                status.innerText = "Error saving. Check your connection.";
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Run when page first loads
+        loadData();
     </script>
 </body>
 </html>
