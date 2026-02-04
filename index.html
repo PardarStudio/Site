@@ -13,29 +13,27 @@
             color: white; height: 100vh; overflow: hidden;
         }
 
-        /* Оболочка для входа (Разделение на 2 части) */
-        .split-screen {
-            display: flex; height: 100vh; width: 100%;
-        }
-
-        /* Левая сторона: Список */
+        /* Экраны */
+        .split-screen { display: flex; height: 100vh; width: 100%; }
+        
+        /* Левая колонка (список со всеми деталями) */
         .left-side {
-            flex: 1; background: rgba(0,0,0,0.5); border-right: 4px solid #f39c12;
-            padding: 30px; overflow-y: auto;
+            flex: 1.2; background: rgba(0,0,0,0.6); border-right: 5px solid #f39c12;
+            padding: 30px; overflow-y: auto; box-sizing: border-box;
         }
 
-        /* Правая сторона: Анкета */
+        /* Правая колонка (анкета) */
         .right-side {
             flex: 1; display: flex; justify-content: center; align-items: center; padding: 30px;
         }
 
-        /* Полноэкранный список после входа */
+        /* Полноэкранный режим после входа */
         #full-screen-list {
-            display: none; height: 100vh; width: 100%; overflow-y: auto; padding: 40px 20px;
-            box-sizing: border-box; text-align: center;
+            display: none; height: 100vh; width: 100%; overflow-y: auto; 
+            padding: 40px 20px; box-sizing: border-box; text-align: center;
         }
 
-        .title { color: #f39c12; text-shadow: 2px 2px 0px #000; margin-bottom: 20px; text-transform: uppercase; }
+        .title { color: #f39c12; text-shadow: 2px 2px 0px #000; margin-bottom: 25px; text-transform: uppercase; }
 
         /* Карточка анкеты */
         .card { 
@@ -46,7 +44,7 @@
 
         input, textarea { 
             width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ccc; 
-            border-radius: 8px; font-size: 16px; box-sizing: border-box;
+            border-radius: 8px; font-size: 16px; box-sizing: border-box; font-family: sans-serif;
         }
 
         button { 
@@ -54,28 +52,34 @@
             border: none; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 18px;
             text-transform: uppercase; transition: 0.2s;
         }
-        button:hover { background: #e67e22; }
+        button:hover { background: #e67e22; transform: translateY(-2px); }
 
         .team-count { 
-            background: #f39c12; color: #000; padding: 10px; border-radius: 8px; 
+            background: #f39c12; color: #000; padding: 10px 20px; border-radius: 8px; 
             font-weight: 900; margin-bottom: 20px; display: inline-block;
         }
 
-        /* Карточки рабочих */
+        /* Универсальная карточка работника */
         .worker-card { 
-            background: rgba(44, 62, 80, 0.9); padding: 15px; margin-bottom: 15px; 
+            background: rgba(44, 62, 80, 0.95); padding: 15px; margin-bottom: 15px; 
             border-radius: 10px; border-left: 8px solid #f39c12; text-align: left;
-            max-width: 600px; margin-left: auto; margin-right: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .worker-card b { color: #f39c12; font-size: 18px; text-transform: uppercase; }
-        .worker-card p { margin: 8px 0 0 0; color: #fff; font-size: 15px; }
+        .worker-card b { color: #f39c12; font-size: 18px; text-transform: uppercase; display: block; }
+        .worker-card .info { font-size: 14px; color: #bdc3c7; margin: 5px 0; }
+        .worker-card .task { margin: 8px 0 0 0; color: #fff; font-size: 15px; border-top: 1px dashed #555; padding-top: 8px; }
 
         #status { margin-top: 10px; font-weight: bold; color: #f39c12; }
 
-        /* Адаптация для мобилок */
-        @media (max-width: 768px) {
+        /* Скроллбар для красоты */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #f39c12; border-radius: 4px; }
+
+        @media (max-width: 850px) {
             .split-screen { flex-direction: column; overflow-y: auto; }
-            .left-side { height: 300px; flex: none; border-right: none; border-bottom: 4px solid #f39c12; }
+            .left-side { height: auto; flex: none; border-right: none; border-bottom: 5px solid #f39c12; }
+            body { overflow: auto; }
         }
     </style>
 </head>
@@ -83,27 +87,28 @@
 
     <div id="login-screen" class="split-screen">
         <div class="left-side">
-            <h2 class="title" style="font-size: 20px;">Уже на объекте:</h2>
-            <div id="side-list">Загрузка...</div>
+            <h2 class="title" style="font-size: 22px;">🛠 ТЕКУЩИЙ СОСТАВ:</h2>
+            <div id="side-list-area">Загрузка данных...</div>
         </div>
+        
         <div class="right-side">
             <div class="card">
-                <h1 style="margin:0 0 15px 0; font-size: 24px;">ЗАПИСЬ</h1>
+                <h1 style="margin:0 0 15px 0; font-size: 24px;">РЕГИСТРАЦИЯ</h1>
                 <input type="text" id="fn" placeholder="Имя">
                 <input type="text" id="ln" placeholder="Фамилия">
                 <input type="number" id="age" placeholder="Возраст">
-                <textarea id="goal" placeholder="Что будешь делать?" rows="3"></textarea>
-                <button id="submitBtn" onclick="saveData()">В ДЕЛО</button>
+                <textarea id="goal" placeholder="Твоя задача на стройке?" rows="3"></textarea>
+                <button id="submitBtn" onclick="saveData()">ВСТУПИТЬ В БРИГАДУ</button>
                 <div id="status"></div>
             </div>
         </div>
     </div>
 
     <div id="full-screen-list">
-        <h1 class="title">СТРОИТЕЛЬНАЯ БРИГАДА 🔨</h1>
+        <h1 class="title">ПОЛНЫЙ СПИСОК БРИГАДЫ 🏠</h1>
         <div class="team-count" id="teamCount">В КОМАНДЕ: 0 ЧЕЛОВЕК</div>
-        <div id="full-list-area"></div>
-        <button onclick="location.reload()" style="max-width: 200px; background:#555; color:white; margin-top:30px;">НАЗАД</button>
+        <div id="full-list-area" style="max-width: 800px; margin: 0 auto;"></div>
+        <button onclick="location.reload()" style="max-width: 200px; background:#444; color:white; margin-top:30px;">НАЗАД</button>
     </div>
 
     <script>
@@ -117,32 +122,33 @@
             } catch (err) { return []; }
         }
 
-        // Показываем мини-список слева при входе
-        async function initSideList() {
-            const list = await loadData();
-            const sideArea = document.getElementById('side-list');
-            if(list.length === 0) {
-                sideArea.innerHTML = "Пока никого нет.";
-            } else {
-                sideArea.innerHTML = list.slice().reverse().map(p => `
-                    <div class="worker-card" style="margin-bottom:8px; padding:10px;">
-                        <b style="font-size:14px;">${p.fn} ${p.ln}</b>
-                    </div>
-                `).join('');
-            }
+        // Функция для создания HTML карточки
+        function createWorkerHTML(p) {
+            return `
+                <div class="worker-card">
+                    <b>${p.fn} ${p.ln}</b>
+                    <div class="info">Возраст: ${p.age} лет</div>
+                    <div class="task"><strong>ЗАДАЧА:</strong> ${p.goal}</div>
+                </div>
+            `;
         }
 
-        function renderFullList(list) {
-            const area = document.getElementById('full-list-area');
+        async function refreshLists() {
+            const list = await loadData();
+            const sideArea = document.getElementById('side-list-area');
+            const fullArea = document.getElementById('full-list-area');
             const countBox = document.getElementById('teamCount');
+
             countBox.innerText = `В КОМАНДЕ: ${list.length} ЧЕЛОВЕК`;
 
-            area.innerHTML = list.slice().reverse().map(p => `
-                <div class="worker-card">
-                    <b>${p.fn} ${p.ln}</b> (Возраст: ${p.age})
-                    <p><strong>ЗАДАЧА:</strong> ${p.goal}</p>
-                </div>
-            `).join('');
+            if (list.length === 0) {
+                sideArea.innerHTML = "Пока никого нет.";
+            } else {
+                const html = list.slice().reverse().map(p => createWorkerHTML(p)).join('');
+                sideArea.innerHTML = html;
+                fullArea.innerHTML = html;
+            }
+            return list;
         }
 
         async function saveData() {
@@ -153,10 +159,10 @@
             const age = document.getElementById('age').value;
             const goal = document.getElementById('goal').value.trim();
 
-            if (!fn || !goal) return alert("Заполни данные!");
+            if (!fn || !age || !goal) return alert("Заполни все поля, строитель!");
 
             btn.disabled = true;
-            status.innerText = "⏳ Запись...";
+            status.innerText = "⏳ Сохранение...";
 
             try {
                 const currentList = await loadData();
@@ -169,19 +175,25 @@
                 });
 
                 if (res.ok) {
+                    // Переключаем экраны
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('full-screen-list').style.display = 'block';
-                    document.body.style.overflow = 'auto'; // Включаем скролл
-                    renderFullList(currentList);
+                    document.body.style.overflow = 'auto'; 
+                    renderFullList(currentList); // Обновляем финальный список
                 }
             } catch (err) {
-                status.innerText = "❌ Ошибка сети";
+                status.innerText = "❌ Ошибка сервера";
                 btn.disabled = false;
             }
         }
 
-        // Запускаем загрузку левого списка при старте
-        initSideList();
+        function renderFullList(list) {
+            document.getElementById('teamCount').innerText = `В КОМАНДЕ: ${list.length} ЧЕЛОВЕК`;
+            document.getElementById('full-list-area').innerHTML = list.slice().reverse().map(p => createWorkerHTML(p)).join('');
+        }
+
+        // Запуск при загрузке
+        refreshLists();
     </script>
 </body>
 </html>
