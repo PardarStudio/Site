@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Sign-In</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #333; text-align: center; }
+        input, button, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #218838; }
+        .list-section { margin-top: 30px; width: 100%; max-width: 600px; }
+        .person-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #28a745; shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .person-card h4 { margin: 0; color: #222; }
+        .person-card p { margin: 5px 0 0; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sign In to the List</h2>
+        <form id="signInForm">
+            <input type="text" id="firstName" placeholder="First Name" required>
+            <input type="text" id="lastName" placeholder="Last Name" required>
+            <input type="number" id="age" placeholder="Age" required>
+            <textarea id="ambition" placeholder="What do you want to be?" rows="3" required></textarea>
+            <button type="submit">Submit Information</button>
+        </form>
+    </div>
+
+    <div class="list-section">
+        <h3>People who have signed in:</h3>
+        <div id="peopleList">
+            <p>Loading the list...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Note: You will need to plug in your own Supabase URL and Key here later!
+        const SUBAPASE_URL = "YOUR_SUPABASE_URL_HERE";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
+
+        const form = document.getElementById('signInForm');
+        const listDiv = document.getElementById('peopleList');
+
+        // Function to show the people on the screen
+        function renderPeople(people) {
+            listDiv.innerHTML = '';
+            people.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'person-card';
+                card.innerHTML = `
+                    <h4>${person.first_name} ${person.last_name}, ${person.age}</h4>
+                    <p><strong>Goal:</strong> ${person.ambition}</p>
+                `;
+                listDiv.appendChild(card);
+            });
+        }
+
+        // Logic for when you hit "Submit"
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert("To make this save for everyone, connect a database like Supabase!");
+            // Here you would add the code to "POST" to your database
+        });
+    </script>
+</body>
+</html>
