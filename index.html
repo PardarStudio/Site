@@ -1,120 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Sign-In</title>
+    <title>Sign-In Fix</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 100%; max-width: 400px; margin-bottom: 30px; }
-        h2 { text-align: center; color: #1c1e21; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:hover { background-color: #0056b3; }
-        button:disabled { background-color: #ccc; }
-        .list-container { width: 100%; max-width: 500px; }
-        .person-entry { background: white; padding: 15px; margin-bottom: 12px; border-radius: 10px; border-left: 6px solid #007bff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .person-entry h4 { margin: 0; color: #333; }
-        .person-entry p { margin: 5px 0 0; color: #666; font-size: 14px; }
-        #status { font-size: 12px; color: #666; text-align: center; margin-top: 5px; }
+        body { font-family: sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; background: #f8f9fa; }
+        .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #list { margin-top: 20px; }
+        .entry { background: white; padding: 10px; margin-top: 10px; border-left: 5px solid #007bff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        #status { font-size: 12px; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Sign In</h2>
-        <input type="text" id="firstName" placeholder="First Name">
-        <input type="text" id="lastName" placeholder="Last Name">
+    <div class="box">
+        <h3>Sign In</h3>
+        <input type="text" id="fn" placeholder="First Name">
+        <input type="text" id="ln" placeholder="Last Name">
         <input type="number" id="age" placeholder="Age">
-        <textarea id="ambition" placeholder="What do you want to be?" rows="2"></textarea>
-        <button id="submitBtn" onclick="saveToCloud()">Submit to List</button>
+        <textarea id="job" placeholder="Your Ambition"></textarea>
+        <button id="btn" onclick="saveData()">Submit</button>
         <div id="status"></div>
     </div>
 
-    <div class="list-container">
-        <h3>Who's here:</h3>
-        <div id="displayArea">Loading the list...</div>
+    <div id="list">
+        <h4>People:</h4>
+        <div id="entries">Loading...</div>
     </div>
 
     <script>
-        // This is your specific JSONBlob API URL
+        // Use the API version of your link
         const API_URL = "https://jsonblob.com/api/jsonBlob/019c2a6d-12fe-7c29-8905-d85cc566029c";
 
-        // 1. Load data from the cloud
         async function loadData() {
             try {
                 const response = await fetch(API_URL);
-                const people = await response.json();
-                renderList(people);
-                return people;
-            } catch (err) {
-                document.getElementById('displayArea').innerHTML = "No one has signed in yet.";
+                if (!response.ok) throw new Error("Could not read list");
+                const data = await response.json();
+                render(data);
+                return data;
+            } catch (e) {
+                console.log("Load Error:", e);
+                document.getElementById('entries').innerHTML = "List is empty or error loading.";
                 return [];
             }
         }
 
-        // 2. Put the data into the HTML
-        function renderList(data) {
-            const area = document.getElementById('displayArea');
-            if (!data || data.length === 0) {
-                area.innerHTML = "List is currently empty.";
-                return;
-            }
-            // Reverse so the newest person is at the top
-            area.innerHTML = data.slice().reverse().map(p => `
-                <div class="person-entry">
-                    <h4>${p.fn} ${p.ln}, ${p.age}</h4>
-                    <p><strong>Goal:</strong> ${p.goal}</p>
+        function render(data) {
+            const html = data.map(p => `
+                <div class="entry">
+                    <b>${p.fn} ${p.ln}</b> (${p.age})<br>
+                    <span>${p.job}</span>
                 </div>
             `).join('');
+            document.getElementById('entries').innerHTML = html || "No entries yet.";
         }
 
-        // 3. Save new entry
-        async function saveToCloud() {
-            const btn = document.getElementById('submitBtn');
+        async function saveData() {
+            const btn = document.getElementById('btn');
             const status = document.getElementById('status');
             
-            const fn = document.getElementById('firstName').value;
-            const ln = document.getElementById('lastName').value;
-            const age = document.getElementById('age').value;
-            const goal = document.getElementById('ambition').value;
+            const person = {
+                fn: document.getElementById('fn').value,
+                ln: document.getElementById('ln').value,
+                age: document.getElementById('age').value,
+                job: document.getElementById('job').value
+            };
 
-            if (!fn || !ln || !age || !goal) {
-                alert("Please fill in all boxes!");
-                return;
-            }
+            if (!person.fn || !person.age) return alert("Fill out the name and age!");
 
             btn.disabled = true;
-            status.innerText = "Saving to cloud...";
+            status.innerText = "Processing...";
 
             try {
-                // Get the existing list first
-                const currentList = await loadData();
+                // 1. Get current list
+                const currentData = await loadData();
                 
-                // Add the new person
-                const newPerson = { fn, ln, age, goal };
-                currentList.push(newPerson);
+                // 2. Add new person
+                currentData.push(person);
 
-                // PUT the updated list back to your JSONBlob
-                await fetch(API_URL, {
+                // 3. Save to Cloud
+                const response = await fetch(API_URL, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(currentList)
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(currentData)
                 });
 
-                status.innerText = "Saved!";
-                // Clear the boxes
-                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
-                renderList(currentList);
-            } catch (err) {
-                status.innerText = "Error saving. Check your connection.";
-                console.error(err);
+                if (response.ok) {
+                    status.innerText = "Success!";
+                    render(currentData);
+                    document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+                } else {
+                    throw new Error("Server rejected the save");
+                }
+            } catch (e) {
+                console.error("Save Error:", e);
+                status.innerText = "Error: " + e.message;
             } finally {
                 btn.disabled = false;
             }
         }
 
-        // Run when page first loads
         loadData();
     </script>
 </body>
