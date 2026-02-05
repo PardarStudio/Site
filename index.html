@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СТРОЙКА ДОМА 🏠</title>
+    <title>СТРОЙКА ДОМА 🏠 РАСПРЕДЕЛЕНИЕ</title>
     <style>
         body {
             margin: 0; padding: 0; font-family: 'Arial Black', Gadget, sans-serif;
@@ -13,21 +13,17 @@
             color: white; height: 100vh; overflow: hidden;
         }
 
-        /* Экраны */
         .split-screen { display: flex; height: 100vh; width: 100%; }
         
-        /* Левая колонка (список со всеми деталями) */
         .left-side {
             flex: 1.2; background: rgba(0,0,0,0.6); border-right: 5px solid #f39c12;
             padding: 30px; overflow-y: auto; box-sizing: border-box;
         }
 
-        /* Правая колонка (анкета) */
         .right-side {
             flex: 1; display: flex; justify-content: center; align-items: center; padding: 30px;
         }
 
-        /* Полноэкранный режим после входа */
         #full-screen-list {
             display: none; height: 100vh; width: 100%; overflow-y: auto; 
             padding: 40px 20px; box-sizing: border-box; text-align: center;
@@ -35,14 +31,13 @@
 
         .title { color: #f39c12; text-shadow: 2px 2px 0px #000; margin-bottom: 25px; text-transform: uppercase; }
 
-        /* Карточка анкеты */
         .card { 
             background: #f4f4f4; color: #333; padding: 30px; border-radius: 12px; 
             border: 5px solid #f39c12; width: 100%; max-width: 380px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         }
 
-        input, textarea { 
+        input, select { 
             width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ccc; 
             border-radius: 8px; font-size: 16px; box-sizing: border-box; font-family: sans-serif;
         }
@@ -52,33 +47,26 @@
             border: none; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 18px;
             text-transform: uppercase; transition: 0.2s;
         }
-        button:hover { background: #e67e22; transform: translateY(-2px); }
+        button:hover:not(:disabled) { background: #e67e22; transform: translateY(-2px); }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
 
         .team-count { 
             background: #f39c12; color: #000; padding: 10px 20px; border-radius: 8px; 
             font-weight: 900; margin-bottom: 20px; display: inline-block;
         }
 
-        /* Универсальная карточка работника */
         .worker-card { 
             background: rgba(44, 62, 80, 0.95); padding: 15px; margin-bottom: 15px; 
             border-radius: 10px; border-left: 8px solid #f39c12; text-align: left;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .worker-card b { color: #f39c12; font-size: 18px; text-transform: uppercase; display: block; }
-        .worker-card .info { font-size: 14px; color: #bdc3c7; margin: 5px 0; }
         .worker-card .task { margin: 8px 0 0 0; color: #fff; font-size: 15px; border-top: 1px dashed #555; padding-top: 8px; }
 
-        #status { margin-top: 10px; font-weight: bold; color: #f39c12; }
-
-        /* Скроллбар для красоты */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: #f39c12; border-radius: 4px; }
+        #status { margin-top: 10px; font-weight: bold; color: #f39c12; font-size: 14px; }
 
         @media (max-width: 850px) {
             .split-screen { flex-direction: column; overflow-y: auto; }
-            .left-side { height: auto; flex: none; border-right: none; border-bottom: 5px solid #f39c12; }
+            .left-side { height: 40%; flex: none; border-right: none; border-bottom: 5px solid #f39c12; }
             body { overflow: auto; }
         }
     </style>
@@ -87,25 +75,33 @@
 
     <div id="login-screen" class="split-screen">
         <div class="left-side">
-            <h2 class="title" style="font-size: 22px;">🛠 ТЕКУЩИЙ СОСТАВ:</h2>
-            <div id="side-list-area">Загрузка данных...</div>
+            <h2 class="title" style="font-size: 22px;">🛠 БРИГАДА В СБОРЕ:</h2>
+            <div id="side-list-area">Загрузка...</div>
         </div>
         
         <div class="right-side">
             <div class="card">
-                <h1 style="margin:0 0 15px 0; font-size: 24px;">РЕГИСТРАЦИЯ</h1>
+                <h1 style="margin:0 0 15px 0; font-size: 24px;">ВЗЯТЬ ЗАДАЧУ</h1>
                 <input type="text" id="fn" placeholder="Имя">
                 <input type="text" id="ln" placeholder="Фамилия">
                 <input type="number" id="age" placeholder="Возраст">
-                <textarea id="goal" placeholder="Твоя задача на стройке?" rows="3"></textarea>
-                <button id="submitBtn" onclick="saveData()">ВСТУПИТЬ В БРИГАДУ</button>
+                
+                <label style="font-size: 12px; font-weight: bold; display: block; text-align: left; margin-top: 10px;">ВЫБЕРИ РАБОТУ:</label>
+                <select id="jobSelect">
+                    <option value="Фундамент">Фундамент</option>
+                    <option value="Декорация">Декорация</option>
+                    <option value="Приготовка дров">Приготовка дров</option>
+                    <option value="План + Помощь">Сделать план + помогать</option>
+                </select>
+
+                <button id="submitBtn" onclick="saveData()">ЗАСТОЛБИТЬ МЕСТО</button>
                 <div id="status"></div>
             </div>
         </div>
     </div>
 
     <div id="full-screen-list">
-        <h1 class="title">ПОЛНЫЙ СПИСОК БРИГАДЫ 🏠</h1>
+        <h1 class="title">ПЛАН РАБОТ 🏠</h1>
         <div class="team-count" id="teamCount">В КОМАНДЕ: 0 ЧЕЛОВЕК</div>
         <div id="full-list-area" style="max-width: 800px; margin: 0 auto;"></div>
         <button onclick="location.reload()" style="max-width: 200px; background:#444; color:white; margin-top:30px;">НАЗАД</button>
@@ -113,6 +109,9 @@
 
     <script>
         const API_URL = "https://api.npoint.io/ad618be876cb8968fb5c";
+        
+        // Список всех возможных работ
+        const ALL_JOBS = ["Фундамент", "Декорация", "Приготовка дров", "План + Помощь"];
 
         async function loadData() {
             try {
@@ -122,78 +121,90 @@
             } catch (err) { return []; }
         }
 
-        // Функция для создания HTML карточки
-        function createWorkerHTML(p) {
-            return `
-                <div class="worker-card">
-                    <b>${p.fn} ${p.ln}</b>
-                    <div class="info">Возраст: ${p.age} лет</div>
-                    <div class="task"><strong>ЗАДАЧА:</strong> ${p.goal}</div>
-                </div>
-            `;
+        function updateJobSelect(occupiedJobs) {
+            const select = document.getElementById('jobSelect');
+            const btn = document.getElementById('submitBtn');
+            select.innerHTML = "";
+
+            const availableJobs = ALL_JOBS.filter(job => !occupiedJobs.includes(job));
+
+            if (availableJobs.length === 0) {
+                select.innerHTML = '<option value="">МЕСТ НЕТ</option>';
+                btn.disabled = true;
+                btn.innerText = "ВСЕ ЗАНЯТЫ";
+            } else {
+                availableJobs.forEach(job => {
+                    const opt = document.createElement('option');
+                    opt.value = job;
+                    opt.innerText = job;
+                    select.appendChild(opt);
+                });
+            }
         }
 
-        async function refreshLists() {
+        async function refreshPage() {
             const list = await loadData();
             const sideArea = document.getElementById('side-list-area');
             const fullArea = document.getElementById('full-list-area');
-            const countBox = document.getElementById('teamCount');
+            
+            // Собираем список уже занятых работ
+            const occupied = list.map(worker => worker.goal);
+            updateJobSelect(occupied);
 
-            countBox.innerText = `В КОМАНДЕ: ${list.length} ЧЕЛОВЕК`;
+            document.getElementById('teamCount').innerText = `В КОМАНДЕ: ${list.length} ЧЕЛОВЕК`;
 
-            if (list.length === 0) {
-                sideArea.innerHTML = "Пока никого нет.";
-            } else {
-                const html = list.slice().reverse().map(p => createWorkerHTML(p)).join('');
-                sideArea.innerHTML = html;
-                fullArea.innerHTML = html;
-            }
-            return list;
+            const html = list.slice().reverse().map(p => `
+                <div class="worker-card">
+                    <b>${p.fn} ${p.ln}</b>
+                    <div style="font-size:13px; color:#bdc3c7;">Возраст: ${p.age}</div>
+                    <div class="task"><strong>РАБОТА:</strong> ${p.goal}</div>
+                </div>
+            `).join('');
+
+            sideArea.innerHTML = list.length === 0 ? "Пока никого." : html;
+            fullArea.innerHTML = html;
         }
 
         async function saveData() {
             const btn = document.getElementById('submitBtn');
-            const status = document.getElementById('status');
             const fn = document.getElementById('fn').value.trim();
             const ln = document.getElementById('ln').value.trim();
             const age = document.getElementById('age').value;
-            const goal = document.getElementById('goal').value.trim();
+            const goal = document.getElementById('jobSelect').value;
 
-            if (!fn || !age || !goal) return alert("Заполни все поля, строитель!");
+            if (!fn || !age || !goal) return alert("Заполни всё!");
 
             btn.disabled = true;
-            status.innerText = "⏳ Сохранение...";
+            document.getElementById('status').innerText = "⏳ Записываю...";
 
             try {
                 const currentList = await loadData();
-                currentList.push({ fn, ln, age, goal });
+                
+                // Проверка на случай, если пока ты заполнял, кто-то уже занял работу
+                if (currentList.some(w => w.goal === goal)) {
+                    alert("Эту работу только что заняли! Выбери другую.");
+                    location.reload();
+                    return;
+                }
 
-                const res = await fetch(API_URL, {
+                currentList.push({ fn, ln, age, goal });
+                await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(currentList)
                 });
 
-                if (res.ok) {
-                    // Переключаем экраны
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('full-screen-list').style.display = 'block';
-                    document.body.style.overflow = 'auto'; 
-                    renderFullList(currentList); // Обновляем финальный список
-                }
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('full-screen-list').style.display = 'block';
+                document.body.style.overflow = 'auto';
+                refreshPage();
             } catch (err) {
-                status.innerText = "❌ Ошибка сервера";
+                alert("Ошибка! Попробуй еще раз.");
                 btn.disabled = false;
             }
         }
 
-        function renderFullList(list) {
-            document.getElementById('teamCount').innerText = `В КОМАНДЕ: ${list.length} ЧЕЛОВЕК`;
-            document.getElementById('full-list-area').innerHTML = list.slice().reverse().map(p => createWorkerHTML(p)).join('');
-        }
-
-        // Запуск при загрузке
-        refreshLists();
+        refreshPage();
     </script>
 </body>
 </html>
