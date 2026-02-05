@@ -64,6 +64,10 @@
 
         #status { margin-top: 10px; font-weight: bold; color: #f39c12; font-size: 14px; }
 
+        /* Красивый скролл */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #f39c12; border-radius: 10px; }
+
         @media (max-width: 850px) {
             .split-screen { flex-direction: column; overflow-y: auto; }
             .left-side { height: 40%; flex: none; border-right: none; border-bottom: 5px solid #f39c12; }
@@ -75,43 +79,39 @@
 
     <div id="login-screen" class="split-screen">
         <div class="left-side">
-            <h2 class="title" style="font-size: 22px;">🛠 БРИГАДА В СБОРЕ:</h2>
-            <div id="side-list-area">Загрузка...</div>
+            <h2 class="title" style="font-size: 22px;">🛠 КТО В ДЕЛЕ:</h2>
+            <div id="side-list-area">Загрузка состава...</div>
         </div>
         
         <div class="right-side">
             <div class="card">
-                <h1 style="margin:0 0 15px 0; font-size: 24px;">ВЗЯТЬ ЗАДАЧУ</h1>
+                <h1 style="margin:0 0 15px 0; font-size: 24px;">ВЫБОР ЗАДАЧИ</h1>
                 <input type="text" id="fn" placeholder="Имя">
                 <input type="text" id="ln" placeholder="Фамилия">
                 <input type="number" id="age" placeholder="Возраст">
                 
-                <label style="font-size: 12px; font-weight: bold; display: block; text-align: left; margin-top: 10px;">ВЫБЕРИ РАБОТУ:</label>
+                <label style="font-size: 12px; font-weight: bold; display: block; text-align: left; margin-top: 10px;">СВОБОДНЫЕ ЗАДАЧИ:</label>
                 <select id="jobSelect">
-                    <option value="Фундамент">Фундамент</option>
-                    <option value="Декорация">Декорация</option>
-                    <option value="Приготовка дров">Приготовка дров</option>
-                    <option value="План + Помощь">Сделать план + помогать</option>
-                </select>
+                    </select>
 
-                <button id="submitBtn" onclick="saveData()">ЗАСТОЛБИТЬ МЕСТО</button>
+                <button id="submitBtn" onclick="saveData()">ЗАСТОЛБИТЬ</button>
                 <div id="status"></div>
             </div>
         </div>
     </div>
 
     <div id="full-screen-list">
-        <h1 class="title">ПЛАН РАБОТ 🏠</h1>
+        <h1 class="title">РАСПРЕДЕЛЕНИЕ БРИГАДЫ 🏠</h1>
         <div class="team-count" id="teamCount">В КОМАНДЕ: 0 ЧЕЛОВЕК</div>
         <div id="full-list-area" style="max-width: 800px; margin: 0 auto;"></div>
-        <button onclick="location.reload()" style="max-width: 200px; background:#444; color:white; margin-top:30px;">НАЗАД</button>
+        <button onclick="location.reload()" style="max-width: 200px; background:#444; color:white; margin-top:30px;">ОБНОВИТЬ / НАЗАД</button>
     </div>
 
     <script>
         const API_URL = "https://api.npoint.io/ad618be876cb8968fb5c";
         
-        // Список всех возможных работ
-        const ALL_JOBS = ["Фундамент", "Декорация", "Приготовка дров", "План + Помощь"];
+        // Твой список работ
+        const ALL_JOBS = ["Фундамент", "Фундамент 2", "Декорация", "Приготовка дров", "План + Помощь"];
 
         async function loadData() {
             try {
@@ -126,12 +126,15 @@
             const btn = document.getElementById('submitBtn');
             select.innerHTML = "";
 
+            // Фильтруем: оставляем только те работы, которых нет в списке занятых
             const availableJobs = ALL_JOBS.filter(job => !occupiedJobs.includes(job));
 
             if (availableJobs.length === 0) {
-                select.innerHTML = '<option value="">МЕСТ НЕТ</option>';
+                const opt = document.createElement('option');
+                opt.innerText = "ВСЕ ЗАДАЧИ ЗАНЯТЫ";
+                select.appendChild(opt);
                 btn.disabled = true;
-                btn.innerText = "ВСЕ ЗАНЯТЫ";
+                btn.style.opacity = "0.5";
             } else {
                 availableJobs.forEach(job => {
                     const opt = document.createElement('option');
@@ -139,6 +142,8 @@
                     opt.innerText = job;
                     select.appendChild(opt);
                 });
+                btn.disabled = false;
+                btn.style.opacity = "1";
             }
         }
 
@@ -147,7 +152,6 @@
             const sideArea = document.getElementById('side-list-area');
             const fullArea = document.getElementById('full-list-area');
             
-            // Собираем список уже занятых работ
             const occupied = list.map(worker => worker.goal);
             updateJobSelect(occupied);
 
@@ -156,12 +160,12 @@
             const html = list.slice().reverse().map(p => `
                 <div class="worker-card">
                     <b>${p.fn} ${p.ln}</b>
-                    <div style="font-size:13px; color:#bdc3c7;">Возраст: ${p.age}</div>
-                    <div class="task"><strong>РАБОТА:</strong> ${p.goal}</div>
+                    <div style="font-size:13px; color:#bdc3c7;">Возраст: ${p.age} лет</div>
+                    <div class="task"><strong>ЗАДАЧА:</strong> ${p.goal}</div>
                 </div>
             `).join('');
 
-            sideArea.innerHTML = list.length === 0 ? "Пока никого." : html;
+            sideArea.innerHTML = list.length === 0 ? "Ожидание строителей..." : html;
             fullArea.innerHTML = html;
         }
 
@@ -172,17 +176,19 @@
             const age = document.getElementById('age').value;
             const goal = document.getElementById('jobSelect').value;
 
-            if (!fn || !age || !goal) return alert("Заполни всё!");
+            if (!fn || !age || !goal || goal === "ВСЕ ЗАДАЧИ ЗАНЯТЫ") {
+                return alert("Введи данные и выбери задачу!");
+            }
 
             btn.disabled = true;
-            document.getElementById('status').innerText = "⏳ Записываю...";
+            document.getElementById('status').innerText = "⏳ Записываю в базу...";
 
             try {
                 const currentList = await loadData();
                 
-                // Проверка на случай, если пока ты заполнял, кто-то уже занял работу
+                // Финальная проверка перед отправкой (если кто-то занял пока ты печатал)
                 if (currentList.some(w => w.goal === goal)) {
-                    alert("Эту работу только что заняли! Выбери другую.");
+                    alert("Эту задачу только что заняли! Страница обновится.");
                     location.reload();
                     return;
                 }
@@ -199,7 +205,7 @@
                 document.body.style.overflow = 'auto';
                 refreshPage();
             } catch (err) {
-                alert("Ошибка! Попробуй еще раз.");
+                alert("Ошибка соединения. Попробуй еще раз.");
                 btn.disabled = false;
             }
         }
